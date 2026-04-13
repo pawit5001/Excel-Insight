@@ -351,6 +351,7 @@ function App() {
   const deferredChartModalSearchText = useDeferredValue(chartModalSearchText)
 
   const sheetNames = useMemo(() => Object.keys(sheetData), [sheetData])
+  const hasUploadedFile = sheetNames.length > 0
 
   const rows = useMemo(() => {
     if (!selectedSheet || !sheetData[selectedSheet]) {
@@ -678,6 +679,10 @@ function App() {
   }, [showColumnPicker])
 
   function exportBranchIssues(branch: string, fileType: 'csv' | 'xlsx') {
+    if (!hasUploadedFile) {
+      return
+    }
+
     const rowsForExport = lowStockIssues
       .filter((item) => item.branch === branch)
       .map((item) => ({
@@ -697,6 +702,10 @@ function App() {
   }
 
   function exportAllBranchIssues(fileType: 'csv' | 'xlsx') {
+    if (!hasUploadedFile) {
+      return
+    }
+
     const rowsForExport = lowStockIssues.map((item) => ({
       สาขา: item.branch,
       รหัสสินค้า: item.productCode,
@@ -743,7 +752,7 @@ function App() {
   }
 
   function exportChartGroupRows(fileType: 'csv' | 'xlsx') {
-    if (!selectedChartGroupForModal) {
+    if (!hasUploadedFile || !selectedChartGroupForModal) {
       return
     }
 
@@ -1050,10 +1059,20 @@ function App() {
         <div className="insight-head">
           <h2>สาขาที่ต้องเบิกสินค้า (Stock ต่ำกว่า Stock ขั้นต่ำ)</h2>
           <div className="export-actions">
-            <button type="button" className="ghost-btn" onClick={() => exportAllBranchIssues('csv')}>
+            <button
+              type="button"
+              className="ghost-btn"
+              onClick={() => exportAllBranchIssues('csv')}
+              disabled={!hasUploadedFile}
+            >
               Export CSV ทุกสาขา
             </button>
-            <button type="button" className="ghost-btn" onClick={() => exportAllBranchIssues('xlsx')}>
+            <button
+              type="button"
+              className="ghost-btn"
+              onClick={() => exportAllBranchIssues('xlsx')}
+              disabled={!hasUploadedFile}
+            >
               Export Excel ทุกสาขา
             </button>
           </div>
@@ -1338,6 +1357,7 @@ function App() {
                 type="button"
                 className="ghost-btn"
                 onClick={() => exportBranchIssues(selectedBranchForModal, 'csv')}
+                disabled={!hasUploadedFile}
               >
                 Export CSV
               </button>
@@ -1345,6 +1365,7 @@ function App() {
                 type="button"
                 className="ghost-btn"
                 onClick={() => exportBranchIssues(selectedBranchForModal, 'xlsx')}
+                disabled={!hasUploadedFile}
               >
                 Export Excel
               </button>
@@ -1454,10 +1475,20 @@ function App() {
               />
             </div>
             <div className="modal-actions modal-actions-left">
-              <button type="button" className="ghost-btn" onClick={() => exportChartGroupRows('csv')}>
+              <button
+                type="button"
+                className="ghost-btn"
+                onClick={() => exportChartGroupRows('csv')}
+                disabled={!hasUploadedFile}
+              >
                 Export CSV
               </button>
-              <button type="button" className="ghost-btn" onClick={() => exportChartGroupRows('xlsx')}>
+              <button
+                type="button"
+                className="ghost-btn"
+                onClick={() => exportChartGroupRows('xlsx')}
+                disabled={!hasUploadedFile}
+              >
                 Export Excel
               </button>
             </div>
